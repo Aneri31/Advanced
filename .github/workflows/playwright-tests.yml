@@ -1,23 +1,22 @@
 name: Run Playwright Tests
 
 on:
-  schedule:
-    - cron: "45 17 * * *" # Run at 17:15 UTC every day
+  workflow_dispatch:  # Manually trigger workflow
 
 jobs:
   test:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2 # Checkout the repository's code
+      - uses: actions/checkout@v2  # Checkout the repository's code
 
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: "14" # Use Node.js version 14
+          node-version: "14"  # Use Node.js version 14
 
       - name: Install dependencies
-        run: npm install # Install project dependencies
+        run: npm install  # Install project dependencies
 
       - name: Run Playwright Tests
-        run: npx playwright test     
+        run: npx playwright test  # Execute Playwright tests
