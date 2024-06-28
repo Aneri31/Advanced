@@ -2,6 +2,7 @@ name: Run Playwright Tests
 'on':
   schedule:
     - cron: 10 16 * * *
+  workflow_dispatch:
 jobs:
   test:
     runs-on: ubuntu-latest
