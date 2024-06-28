@@ -20,4 +20,4 @@ jobs:
         run: npm install # Install project dependencies
 
       - name: Run Playwright Tests
-        run: npx playwright te     
+        run: npx playwright test     
