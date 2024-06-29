@@ -1,8 +1,8 @@
 name: Run Playwright Tests
 
 on:
-  workflow_dispatch:  # Manually trigger workflow
-
+    schedule:
+      - cron: '50 14 * * *'
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -19,4 +19,4 @@ jobs:
         run: npm install  # Install project dependencies
 
       - name: Run Playwright Tests
-        run: npx playwright test  # Execute Playwright tests
+        run: npx playwright test example.spec.js
