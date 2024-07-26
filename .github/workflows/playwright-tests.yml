@@ -43,7 +43,7 @@ jobs:
         body: |
           <p>Playwright test results summary:</p>
           <pre>$(cat summary.txt)</pre>
-        to: 'recipient@example.com'
+        to: 'aneripatel292@gmail.com'
         from: ${{ secrets.SMTP_USERNAME }}
         attachments: |
           playwright-report/*.html
