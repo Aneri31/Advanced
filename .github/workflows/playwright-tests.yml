@@ -2,23 +2,19 @@ name: Run Playwright Tests
 
 on:
   schedule:
-    - cron: '30 07 * * *' 
+    - cron: '40 09 * * *'  # 15:10 IST converted to 09:40 UTC
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [18.x]
-
     steps:
     - uses: actions/checkout@v4
 
-    - name: Use Node.js ${{ matrix.node-version }}
+    - name: Use Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: ${{ matrix.node-version }}
+        node-version: '18.x'
         cache: 'npm'
 
     - run: npm ci
@@ -26,7 +22,9 @@ jobs:
     - run: npx playwright install
 
     - name: Run Playwright Tests
-      run: npx playwright test --reporter=html
+      run: |
+        npx playwright test --reporter=html
+        npx playwright show-report > summary.txt
 
     - name: Upload Playwright HTML Report
       uses: actions/upload-artifact@v3
@@ -34,11 +32,18 @@ jobs:
         name: playwright-html-report
         path: playwright-report
 
-    - name: Generate Summary
-      run: |
-        echo "Playwright tests completed." > summary.txt
-        echo "HTML report is available as an artifact." >> summary.txt
-        echo "Summary of test results:" >> summary.txt
-        cat playwright-report/index.html >> summary.txt
-        echo "### Test Results Summary" >> $GITHUB_STEP_SUMMARY
-        cat summary.txt >> $GITHUB_STEP_SUMMARY
+    - name: Send Email with Test Summary
+      uses: dawidd6/action-send-mail@v3
+      with:
+        server_address: ${{ secrets.SMTP_SERVER }}
+        server_port: ${{ secrets.SMTP_PORT }}
+        username: ${{ secrets.SMTP_USERNAME }}
+        password: ${{ secrets.SMTP_PASSWORD }}
+        subject: 'Playwright Test Results Summary'
+        body: |
+          <p>Playwright test results summary:</p>
+          <pre>$(cat summary.txt)</pre>
+        to: 'recipient@example.com'
+        from: ${{ secrets.SMTP_USERNAME }}
+        attachments: |
+          playwright-report/*.html
