@@ -2,7 +2,7 @@ name: Run Playwright Tests
 
 on:
   schedule:
-    - cron: '13 07 * * *'  # 12:30 IST converted to 07:10 UTC
+    - cron: '30 07 * * *' 
 
 jobs:
   build:
@@ -34,45 +34,11 @@ jobs:
         name: playwright-html-report
         path: playwright-report
 
-    - name: Generate Test Summary
+    - name: Generate Summary
       run: |
-        if [ -f playwright-report/index.html ]; then
-          echo "Playwright tests completed. HTML report is attached." > summary.txt
-        else
-          echo "Playwright tests failed or HTML report not found." > summary.txt
-        fi
-
-    - name: Send Email with Report
-      env:
-        SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
-      run: |
-        REPORT_PATH=$(find . -name 'index.html')
-        echo "Sending email with HTML report and summary..."
-        curl -X POST "https://api.sendgrid.com/v3/mail/send" \
-          -H "Authorization: Bearer $SENDGRID_API_KEY" \
-          -H "Content-Type: application/json" \
-          -d '{
-            "personalizations": [
-              {
-                "to": [
-                  {"email": "aneripatel292@gmail.com"}
-                ],
-                "subject": "Playwright Test Results"
-              }
-            ],
-            "from": {"email": "aneripatel292@gmail.com"},
-            "content": [
-              {
-                "type": "text/html",
-                "value": "<p>Playwright test results summary:</p><p><b>Summary:</b></p><p>$(cat summary.txt)</p><p><b>HTML Report:</b></p><p><a href=\"${{ github.server_url }}/${{ github.repository }}/suites/${{ github.run_id }}/artifacts/${{ steps.upload-report.outputs.artifact_id }}/playwright-report/index.html\">View Report</a></p>"
-              }
-            ],
-            "attachments": [
-              {
-                "content": "'"$(base64 "$REPORT_PATH")"'",
-                "type": "text/html",
-                "filename": "playwright-report.html"
-              }
-            ]
-          }'
-
+        echo "Playwright tests completed." > summary.txt
+        echo "HTML report is available as an artifact." >> summary.txt
+        echo "Summary of test results:" >> summary.txt
+        cat playwright-report/index.html >> summary.txt
+        echo "### Test Results Summary" >> $GITHUB_STEP_SUMMARY
+        cat summary.txt >> $GITHUB_STEP_SUMMARY
