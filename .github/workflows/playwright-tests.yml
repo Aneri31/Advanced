@@ -2,7 +2,7 @@ name: Run Playwright Tests
 
 on:
     schedule:
-      - cron: '50 14 * * *'
+      - cron: '10 07 * * *'
 jobs:
   test:
     runs-on: ubuntu-latest
